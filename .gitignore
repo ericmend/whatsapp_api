@@ -1,0 +1,35 @@
+__pycache__/
+*.py[cod]
+
+bin/
+build/
+dist/
+envi/
+.vscode/
+.idea/
+
+# Environments
+.env
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+report.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+.mypy_cache/
+storage-google-staging.json
+
+*.db

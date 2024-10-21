@@ -1,0 +1,12 @@
+# .coveragerc
+[run]
+branch = True
+source = app  # ou o diretório onde está seu código fonte
+omit = 
+    */tests/*
+    */venv/*
+    */__init__.py
+
+[report]
+show_missing = True
+skip_covered = True
