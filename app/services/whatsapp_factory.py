@@ -1,3 +1,4 @@
+import logging
 import time
 
 from selenium import webdriver
@@ -9,6 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from config.environment import Environment
 
 env = Environment()
+_logger = logging.getLogger(__name__)
 
 
 class WebDriverWhatsappFactory:
@@ -27,6 +29,9 @@ class WebDriverWhatsappFactory:
             )
             if len(elements_recipient) > 0:
                 return True
+            _logger.info(
+                f"Validando {index} tetativas de no máximo {env.MAX_RETRY}."
+            )
             time.sleep(5)
         return False
 
@@ -43,10 +48,15 @@ class WebDriverWhatsappFactory:
             options.add_argument("--disable-infobars")
             options.add_argument("--disable-dev-shm-usage")
             options.add_argument("--no-sandbox")
-            # options.add_argument('--headless')
+            options.add_argument("--headless")
+            options.add_argument("--disable-gpu")
             WebDriverWhatsappFactory._driver = webdriver.Chrome(
                 service=Service(executable_path=env.PATH_SERVICE),
                 options=options,
+            )
+            _logger.info("Iniciando o driver.")
+            WebDriverWhatsappFactory._driver.set_page_load_timeout(
+                env.PAGE_LOAD_TIMEOUT
             )
             WebDriverWhatsappFactory._driver.get("https://web.whatsapp.com")
         if not WebDriverWhatsappFactory._validate_driver():
