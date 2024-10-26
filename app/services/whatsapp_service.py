@@ -65,25 +65,26 @@ def click_link_by_id(driver, id):
 
 def send_message_in_chat(driver, message):
     """Envia a mensagem no chat ativo."""
-    try:
-        time.sleep(2)  # Garantir que o chat carregue
-        footers = driver.find_elements(By.CSS_SELECTOR, "footer._ak1i")
-        if footers:
-            footer = footers[0]
-            input_box = footer.find_elements(
-                By.CSS_SELECTOR, ".selectable-text.copyable-text"
-            )
-            if input_box:
-                message_box = input_box[0]
-                message_box.click()
-                message_box.send_keys(message, Keys.ENTER)
-                _logger.info("Mensagem enviada com sucesso.")
-            else:
-                raise Exception("Caixa de mensagem não encontrada.")
-        else:
-            raise Exception("Footer não encontrado.")
-    except Exception as e:
-        raise Exception(f"Erro ao enviar a mensagem: {e}")
+    index = 0
+    while index < 3:
+        index += 1
+        try:
+            time.sleep(2)  # Garantir que o chat carregue
+            footers = driver.find_elements(By.CSS_SELECTOR, "footer._ak1i")
+            if footers:
+                footer = footers[0]
+                input_box = footer.find_elements(
+                    By.CSS_SELECTOR, ".selectable-text.copyable-text"
+                )
+                if input_box:
+                    message_box = input_box[0]
+                    message_box.click()
+                    message_box.send_keys(message, Keys.ENTER)
+                    _logger.info("Mensagem enviada com sucesso.")
+                    return
+        except Exception as e:
+            _logger.warning(f"Erro ao enviar a mensagem: {e}; {index} de 3")
+    raise Exception("Footer não encontrado.")
 
 
 def execute_send_message_group(dto):

@@ -23,7 +23,7 @@ clean:
 
 # Monta o ambiente virtual
 build-venv:
-	python3.12 -m venv .venv
+	python3 -m venv .venv
 
 # Instala o ambiente
 requirements-dev:

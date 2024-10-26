@@ -6,8 +6,9 @@ from app import create_app
 from app.services.whatsapp_queue import WhatsappQueue
 
 BEARER = (
-    "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.e30."
-    "7sEXtx7-by8WsMR4Mr1PvHrQR6EjmctKeVEAqF5CoBw"
+    "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+    ".eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIn0"
+    ".HizSRr0HJ4X5prGG4CP4Fq23BP91xv46qNOlU7RHXGo"
 )
 
 

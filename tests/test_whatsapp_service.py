@@ -123,6 +123,5 @@ def test_send_message_error_handling_find_elements(
     with patch("app.services.whatsapp_service._logger.error") as mock_logger:
         send_message(dto)
         mock_logger.assert_called_once_with(
-            "Erro ao executar envio de mensagem: "
-            "Erro ao enviar a mensagem: Erro no driver"
+            "Erro ao executar envio de mensagem: Footer não encontrado."
         )
