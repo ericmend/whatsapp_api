@@ -11,6 +11,9 @@ Este projeto é uma API simples construída com Flask, que utiliza Selenium para
 - [Instalação](#instalação)
 - [Uso](#uso)
 - [Testes](#testes)
+- [Variáveis de ambiente](#variáveis-de-ambiente)
+- [Service](#service)
+- [Health-check](#health-check)
 
 ## Características
 
@@ -88,9 +91,28 @@ Instale as dependências:
 ```bash
 make build-venv
 source .venv/bin/activate
+
+#desenvolvedor
 make install
+
+#producao
+make requirements-prod
 ```
-Certifique-se de que o ChromeDriver esteja configurado corretamente. O webdriver-manager deve gerenciá-lo automaticamente.
+
+Certifique-se de que o webdriver-manager esteja configurado corretamente.
+
+```bash
+sudo apt-get install chromium-chromedriver
+```
+
+ou https://sites.google.com/chromium.org/driver/downloads
+
+O caminho do webdriver-manager, deve ser informado na variável de ambiente `PATH_SERVICE`. Ex.:
+
+```bash
+PATH_SERVICE=/snap/bin/chromium.chromedriver
+```
+
 
 ## Uso
 
@@ -124,3 +146,76 @@ Para executar os testes unitários, use o seguinte comando:
 make test
 ```
 Os testes estão localizados na pasta tests.
+
+## Variáveis de ambiente
+
+| Variável            | Descrição                            |  Obrigatório |  Valor padrão |
+| ------------------- | ------------------------------------ | :----------: | :-----------: |
+| APP_ENV             | Ambiende do app                      | Não          | development   |
+| APP_PORT            | Porta da aplicação                   | Não          | 5000          |
+| PATH_SERVICE        | Local do webdriver-manager           | Sim          |               |
+| PATH_CONFIG_CHROME  | Local de config do Chrome            | Sim          |               |
+| PROFILE_DIRECTORY   | Nome do profile para o Chrome        | Sim          |               |
+| MAX_RETRY           | Maximo de validação na inicialização | Não          | 1000          |
+| SECRET_KEY          | Secret para o JWT                    | Sim          |               |
+| JWT_ALGORITHM       | Tipo do algoritmo JWT                | Não          | HS256         |
+
+## Service
+
+Para configurar a aplicação como serviço no sistema operacional:
+
+create file:
+```bash
+sudo nano /etc/systemd/system/whatsapp_api.service
+```
+Configura o service para iniciar a aplicação em tela (modo windows) e definir como _"active (running)"_ quando a aplicação retornar sucesso no _health-check_
+```bash
+[Unit]
+Description=Whatsapp-API Service
+After=graphical.target
+
+[Service]
+Type=simple
+User=pi
+Environment=DISPLAY=:0
+TimeoutStartSec=400
+ExecStart=/[PATH-CLONE-REPOSITORY]/whatsapp_api/iniciar_app.sh
+ExecStartPost=/bin/bash -c 'until [ "$(curl --silent --output /dev/null --write-out "%{http_code}" http://localhost:5000/health_check)" -eq 200 ]; do echo "Aguardando o serviço responder com HTTP 200>
+
+[Install]
+WantedBy=graphical.target
+```
+
+Salva, habilita e reinicia:
+```bash
+sudo systemctl enable whatsapp_api.service
+sudo systemctl daemon-reload
+sudo systemctl restart whatsapp_api.service
+```
+## Health-check
+
+Configurar um serviço para ficar validando se a aplicação está _"active (running)"_.
+create file:
+```bash
+sudo nano /etc/systemd/system/health_check_app.service
+```
+```bash
+[Unit]
+Description=Monitorar e reiniciar o serviço caso o health_check falhe
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/home/eric/source/whatsapp_api/health_check_app.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
+```
+Salva, habilita e reinicia:
+```bash
+sudo systemctl enable health_check_app.service
+sudo systemctl daemon-reload
+sudo systemctl restart health_check_app.service
+```
